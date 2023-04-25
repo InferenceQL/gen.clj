@@ -208,3 +208,13 @@
                                  :else
                                  form))
                          body)))))
+
+(defmacro let-traced
+  [bindings & body]
+  (let [bents (partition 2 bindings)]
+    (assert (every? symbol? (map first bents)))
+    `(let ~(into []
+                 (mapcat (fn [[sym expr]]
+                           [sym `(gen/trace (quote ~sym) ~expr)]))
+                 bents)
+       ~@body)))
